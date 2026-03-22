@@ -258,7 +258,6 @@
 <script src="{{ url_for('static', filename='js/libs/bootstrap-datepicker/locales/bootstrap-datepicker.' + current_user.locale + '.min.js') }}" charset="UTF-8"></script>
 {% endif %}
 <script src="{{ url_for('static', filename='js/libs/bootstrap-rating-input.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/libs/typeahead.bundle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/edit_books.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-select.min.js')}}"></script>
 {% if not current_user.locale == 'en' %}
@@ -266,7 +265,6 @@
 {% endif %}
 {% endblock %}
 {% block header %}
-<link href="{{ url_for('static', filename='css/libs/typeahead.css') }}" rel="stylesheet" media="screen">
 <link href="{{ url_for('static', filename='css/libs/bootstrap-datepicker3.min.css') }}" rel="stylesheet" media="screen">
 <link href="{{ url_for('static', filename='css/libs/bootstrap-select.min.css') }}" rel="stylesheet" >
 {% endblock %}

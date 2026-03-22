@@ -16,6 +16,8 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/libs/bootstrap.min.css') }}" rel="stylesheet" media="screen">
     {% block header %}{% endblock %}
+    <link href="{{ url_for('static', filename='css/libs/bootstrap-datepicker3.min.css') }}" rel="stylesheet" media="screen">
+    <link href="{{ url_for('static', filename='css/libs/typeahead.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/upload.css') }}" rel="stylesheet" media="screen">
     {% if g.current_theme == 1 %}
@@ -38,21 +40,69 @@
           <a class="navbar-brand modern-navbar-brand" href="{{url_for('web.index')}}">{{instance}}</a>
         </div>
         {% if current_user.is_authenticated or g.allow_anonymous %}
-          <form class="navbar-form modern-navbar-search" role="search" action="{{url_for('search.simple_search')}}" method="GET">
-            <div class="form-group input-group input-group-sm modern-search-group">
-              <label for="query" class="sr-only">{{_('Search')}}</label>
-              <span class="modern-search-icon glyphicon glyphicon-search" aria-hidden="true"></span>
-              <input type="text" class="form-control modern-search-input" id="query" name="query" placeholder="{{_('Search your collection...')}}" value="{{searchterm}}">
-              <span class="input-group-btn modern-search-submit">
-                <button type="submit" id="query_submit" class="btn btn-default">{{_('Search')}}</button>
-              </span>
+          <div class="navbar-form modern-navbar-search" role="search">
+            <div class="modern-search-shell">
+              <form class="modern-search-form" action="{{url_for('search.simple_search')}}" method="GET">
+                <div class="form-group input-group input-group-sm modern-search-group">
+                  <label for="query" class="sr-only">{{_('Search')}}</label>
+                  <span class="modern-search-icon glyphicon glyphicon-search" aria-hidden="true"></span>
+                  <input type="text" class="form-control modern-search-input" id="query" name="query" placeholder="{{_('Search your collection...')}}" value="{{searchterm}}" autocomplete="off">
+                  <button type="button" class="btn btn-default modern-search-filter" id="query_filter" aria-label="{{_('Advanced Search')}}" aria-expanded="false" aria-controls="modern_search_panel">
+                    <span class="glyphicon glyphicon-filter"></span>
+                  </button>
+                  <button type="button" class="btn btn-default modern-search-clear{% if not searchterm %} hidden{% endif %}" id="query_clear" aria-label="{{_('Clear search')}}">
+                    <span class="glyphicon glyphicon-remove"></span>
+                  </button>
+                  <span class="input-group-btn modern-search-submit hidden">
+                    <button type="submit" id="query_submit" class="btn btn-default">{{_('Search')}}</button>
+                  </span>
+                </div>
+              </form>
+              <div class="modern-search-panel" id="modern_search_panel" hidden>
+                <form class="modern-search-panel-form" action="{{ url_for('search.advanced_search') }}" method="POST">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="title" id="advanced_title" value="{{searchterm}}">
+                  <div class="modern-search-panel-grid">
+                    <div class="form-group modern-search-panel-field">
+                      <label for="advanced_authors">{{_('Author')}}</label>
+                      <input type="text" class="form-control" name="authors" id="advanced_authors" autocomplete="off">
+                    </div>
+                    <div class="form-group modern-search-panel-field">
+                      <label for="advanced_publisher">{{_('Publisher')}}</label>
+                      <input type="text" class="form-control" name="publisher" id="advanced_publisher" autocomplete="off">
+                    </div>
+                    <div class="form-group modern-search-panel-field">
+                      <label for="advanced_comments">{{_('Description')}}</label>
+                      <input type="text" class="form-control" name="comments" id="advanced_comments" autocomplete="off">
+                    </div>
+                    <div class="form-group modern-search-panel-field">
+                      <label for="advanced_read_status">{{_('Read Status')}}</label>
+                      <select name="read_status" id="advanced_read_status" class="form-control">
+                        <option value="Any" selected>{{_('Any')}}</option>
+                        <option value="">{{_('Empty')}}</option>
+                        <option value="True">{{_('Yes')}}</option>
+                        <option value="False">{{_('No')}}</option>
+                      </select>
+                    </div>
+                    <div class="form-group modern-search-panel-field">
+                      <label for="advanced_publish_year">{{_('Published Year')}}</label>
+                      <input type="hidden" name="publishstart" id="advanced_publish_year_start">
+                      <input type="hidden" name="publishend" id="advanced_publish_year_end">
+                      <input type="text" class="form-control modern-search-yearpicker" id="advanced_publish_year" autocomplete="off" placeholder="{{_('Select year')}}">
+                    </div>
+                  </div>
+                  <div class="modern-search-panel-actions">
+                    <button type="reset" class="btn btn-default modern-search-panel-reset">{{_('Clear')}}</button>
+                    <button type="submit" class="btn btn-default modern-search-panel-submit">{{_('Apply Filters')}}</button>
+                  </div>
+                </form>
+              </div>
             </div>
-          </form>
+          </div>
         {% endif %}
         <div class="navbar-collapse collapse modern-navbar-collapse">
           {% if current_user.is_authenticated or g.allow_anonymous %}
           <ul class="nav navbar-nav modern-navbar-links">
-            <li><a href="{{url_for('search.advanced_search')}}" id="advanced_search">{{_('Advanced Search')}}</a></li>
             {% if simple==true %}<li><a href="{{url_for('basic.index')}}" id="basic">{{_('Simple Theme')}}</a></li>{% endif %}
           </ul>
           {% endif %}
@@ -73,7 +123,7 @@
               {% if not current_user.is_anonymous and not simple %}
                 <li class="top_tasks">
                   <a id="top_tasks" class="modern-icon-link" href="{{url_for('tasks.get_tasks_status')}}" title="{{_('Tasks')}}" aria-label="{{_('Tasks')}}">
-                    <span class="glyphicon glyphicon-bell"></span>
+                    <span class="glyphicon glyphicon-tasks"></span>
                   </a>
                 </li>
               {% endif %}
@@ -93,6 +143,7 @@
                       <span class="glyphicon glyphicon-user"></span>
                     {% endif %}
                   </span>
+                  <span class="glyphicon glyphicon-chevron-down modern-profile-caret" aria-hidden="true"></span>
                 </a>
                 <ul class="dropdown-menu modern-profile-menu">
                   <li><a id="top_user" data-text="{{_('Account')}}" href="{% if not current_user.is_anonymous %}{{url_for('web.profile')}}{% else %}{{url_for('web.login', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}{% endif %}"><span class="glyphicon glyphicon-user"></span> {{_('Account')}}</a></li>
@@ -298,6 +349,8 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{{ url_for('static', filename='js/libs/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/underscore-umd-min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/typeahead.bundle.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/intention.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/context.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/plugins.js') }}"></script>

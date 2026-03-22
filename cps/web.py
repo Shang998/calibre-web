@@ -295,6 +295,32 @@ def get_languages_json():
     return json_dumps
 
 
+@web.route("/get_titles_json", methods=['GET'])
+@login_required_if_no_ano
+def get_titles_json():
+    query = (request.args.get('q') or '').strip()
+    if not query:
+        return jsonify([])
+
+    calibre_db.create_functions()
+    entries = (calibre_db.session.query(db.Books)
+               .filter(calibre_db.common_filters())
+               .filter(func.lower(db.Books.title).ilike("%" + query.lower() + "%"))
+               .order_by(db.Books.sort)
+               .limit(8)
+               .all())
+
+    return jsonify([
+        {
+            'id': entry.id,
+            'name': entry.title,
+            'authors': ', '.join(author.name.replace('|', ',') for author in entry.authors[:2]),
+            'url': url_for('web.show_book', book_id=entry.id)
+        }
+        for entry in entries
+    ])
+
+
 @web.route("/get_matching_tags", methods=['GET'])
 @login_required_if_no_ano
 def get_matching_tags():

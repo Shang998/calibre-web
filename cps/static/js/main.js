@@ -167,12 +167,140 @@ $("#form-upload-format").uploadprogress({
 });
 
 $(document).ready(function() {
-    var inp = $('#query').first()
+    var inp = $("#query").first();
     if (inp.length) {
-        var val = inp.val()
+        var val = inp.val();
         if (val.length) {
-            inp.val('').blur().focus().val(val)
+            inp.val("").blur().focus().val(val);
         }
+
+        var clearButton = $("#query_clear");
+        var filterButton = $("#query_filter");
+        var searchPanel = $("#modern_search_panel");
+        var advancedTitle = $("#advanced_title");
+        var advancedPublishYear = $("#advanced_publish_year");
+        var advancedPublishYearStart = $("#advanced_publish_year_start");
+        var advancedPublishYearEnd = $("#advanced_publish_year_end");
+        var searchShell = $(".modern-search-shell");
+        var toggleClearButton = function(value) {
+            clearButton.toggleClass("hidden", !value);
+        };
+        var setSearchPanelState = function(isOpen) {
+            searchPanel.prop("hidden", !isOpen);
+            filterButton.attr("aria-expanded", isOpen ? "true" : "false");
+        };
+        var syncPublishYearRange = function(yearValue) {
+            if (yearValue) {
+                advancedPublishYearStart.val(yearValue + "-01-01");
+                advancedPublishYearEnd.val(yearValue + "-12-31");
+            } else {
+                advancedPublishYearStart.val("");
+                advancedPublishYearEnd.val("");
+            }
+        };
+
+        if (typeof Bloodhound !== "undefined") {
+            var titles = new Bloodhound({
+                name: "titles",
+                datumTokenizer: function(datum) {
+                    return Bloodhound.tokenizers.whitespace(datum.name);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: getPath() + "/get_titles_json?q=%QUERY",
+                    wildcard: "%QUERY"
+                }
+            });
+
+            inp.typeahead(
+                {
+                    hint: true,
+                    highlight: true,
+                    minLength: 1
+                },
+                {
+                    name: "titles",
+                    display: "name",
+                    limit: 8,
+                    source: titles,
+                    templates: {
+                        suggestion: function(item) {
+                            var authors = item.authors ? "<span class=\"modern-search-suggestion-meta\">" + _.escape(item.authors) + "</span>" : "";
+                            return "<div class=\"modern-search-suggestion\"><span class=\"modern-search-suggestion-title\">" +
+                                _.escape(item.name) + "</span>" + authors + "</div>";
+                        }
+                    }
+                }
+            );
+
+            inp.on("typeahead:open typeahead:render", function() {
+                setSearchPanelState(false);
+            });
+
+            inp.on("typeahead:select", function(event, suggestion) {
+                if (suggestion && suggestion.url) {
+                    window.location.href = suggestion.url;
+                }
+            });
+        }
+
+        inp.on("input", function() {
+            var value = $(this).val().trim();
+            toggleClearButton(value.length);
+            advancedTitle.val(value);
+        });
+
+        clearButton.on("click", function() {
+            inp.typeahead("val", "");
+            inp.focus();
+            toggleClearButton("");
+            advancedTitle.val("");
+        });
+
+        filterButton.on("click", function() {
+            var shouldOpen = searchPanel.prop("hidden");
+            if (shouldOpen) {
+                inp.typeahead("close");
+            }
+            setSearchPanelState(shouldOpen);
+        });
+
+        $(document).on("mousedown", function(event) {
+            if (!searchPanel.prop("hidden") && !$(event.target).closest(searchShell).length) {
+                setSearchPanelState(false);
+            }
+        });
+
+        $(document).on("keydown", function(event) {
+            if (event.key === "Escape" && !searchPanel.prop("hidden")) {
+                setSearchPanelState(false);
+            }
+        });
+
+        $(".modern-search-panel-form").on("reset", function() {
+            window.setTimeout(function() {
+                advancedTitle.val(inp.typeahead("val") || inp.val() || "");
+                advancedPublishYearStart.val("");
+                advancedPublishYearEnd.val("");
+            }, 0);
+        });
+
+        if (advancedPublishYear.length && typeof advancedPublishYear.datepicker === "function") {
+            advancedPublishYear.datepicker({
+                format: "yyyy",
+                minViewMode: 2,
+                autoclose: true
+            }).on("changeDate clearDate", function() {
+                syncPublishYearRange($(this).val());
+            }).on("change", function() {
+                syncPublishYearRange($(this).val());
+            });
+        }
+
+        advancedTitle.val(val.trim());
+        syncPublishYearRange(advancedPublishYear.val());
+        toggleClearButton(val.trim().length);
+        setSearchPanelState(false);
     }
 });
 

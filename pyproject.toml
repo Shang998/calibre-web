@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.2"]
+requires = ["setuptools>=61.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,7 +7,7 @@ name = "calibreweb"
 description = "Web app for browsing, reading and downloading eBooks stored in a Calibre database."
 authors = [{name = "@OzzieIsaacs", email = "Ozzie.Fernandez.Isaacs@googlemail.com"}]
 maintainers = [{name = "@OzzieIsaacs"}]
-license = "GPL-3.0-or-later"
+license = {text = "GPL-3.0-or-later"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3",
@@ -118,12 +118,13 @@ kobo = [
 ]
 
 [project.scripts]
-cps = "calibreweb:main"
+cps = "cps.main:main"
 
 [tool.setuptools]
 include-package-data = true
 license-files = ["LICENSE"]
+packages = ["cps"]
 
 [tool.setuptools.dynamic]
-version = {attr = "calibreweb.cps.constants.STABLE_VERSION"}
+version = {attr = "cps.constants.STABLE_VERSION"}
 

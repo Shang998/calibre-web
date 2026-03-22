@@ -251,12 +251,53 @@ $("#search").on("change input.typeahead:selected", function(event) {
     $("#upload-format").text(filename);
 });*/
 
+var newCoverObjectUrl;
+
+function updateCoverPreview(file) {
+    var $preview = $("#detailcover");
+    if (!$preview.length) {
+        $preview = $(".cover img").first();
+    }
+    if (!file || !$preview.length) {
+        return;
+    }
+
+    var loadDataUrlFallback = function () {
+        $preview.off(".coverPreview");
+        if (typeof FileReader === "undefined") {
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $preview.attr("src", e.target.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    if (typeof URL !== "undefined" && URL.createObjectURL) {
+        if (newCoverObjectUrl) {
+            URL.revokeObjectURL(newCoverObjectUrl);
+        }
+        newCoverObjectUrl = URL.createObjectURL(file);
+        $preview
+            .off(".coverPreview")
+            .on("error.coverPreview", loadDataUrlFallback)
+            .on("load.coverPreview", function () {
+                $preview.off(".coverPreview");
+            })
+            .attr("src", newCoverObjectUrl);
+    } else {
+        loadDataUrlFallback();
+    }
+}
+
 $("#btn-upload-cover").on("change", function () {
     var filename = $(this).val();
     if (filename.substring(3, 11) === "fakepath") {
         filename = filename.substring(12);
     } // Remove c:\fake at beginning from localhost chrome
     $("#upload-cover").text(filename);
+    updateCoverPreview(this.files && this.files[0]);
 });
 
 $("#xchange").click(function () {

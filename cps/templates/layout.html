@@ -93,7 +93,6 @@
                       <span class="glyphicon glyphicon-user"></span>
                     {% endif %}
                   </span>
-                  <span class="modern-profile-name hidden-sm hidden-xs">{{ current_user.name }}</span>
                 </a>
                 <ul class="dropdown-menu modern-profile-menu">
                   <li><a id="top_user" data-text="{{_('Account')}}" href="{% if not current_user.is_anonymous %}{{url_for('web.profile')}}{% else %}{{url_for('web.login', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}{% endif %}"><span class="glyphicon glyphicon-user"></span> {{_('Account')}}</a></li>

@@ -230,14 +230,13 @@ table .bg-dark-danger a { color: #fff; }
   background: rgba(255, 255, 255, 0.96) !important;
   border: 0;
   border-bottom: 1px solid rgba(12, 63, 57, 0.08);
-  box-shadow: 0 14px 40px rgba(16, 52, 48, 0.08);
 }
 
 .modern-navbar-shell {
   display: flex;
   align-items: center;
   gap: 24px;
-  min-height: 84px;
+  min-height: 72px;
   padding: 14px 28px;
 }
 
@@ -252,7 +251,7 @@ table .bg-dark-danger a { color: #fff; }
   height: auto;
   padding: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.03em;
   color: #1d5a53 !important;
@@ -272,25 +271,25 @@ table .bg-dark-danger a { color: #fff; }
 
 .modern-search-icon {
   position: absolute;
-  left: 20px;
+  right: 10px;
   top: 50%;
   z-index: 3;
   transform: translateY(-50%);
   color: #8ca39f;
-  font-size: 22px;
+  font-size: 14px;
   pointer-events: none;
 }
 
 .modern-search-input {
   width: 100% !important;
-  height: 48px;
-  padding: 12px 22px 12px 54px;
+  height: 38px !important;
+  padding: 12px 32px 12px 12px !important;
   border: 0;
   border-radius: 18px !important;
   background: #eef2f1;
-  box-shadow: none;
+  box-shadow: none !important;
   color: #234640;
-  font-size: 18px;
+  font-size: 13px !important;
 }
 
 .modern-search-input:focus {
@@ -327,7 +326,7 @@ table .bg-dark-danger a { color: #fff; }
 .modern-navbar-links > li > a,
 .modern-pill-button,
 .modern-profile-trigger {
-  border-radius: 999px;
+  border-radius: 12px;
 }
 
 .modern-navbar-links > li > a {
@@ -341,6 +340,7 @@ table .bg-dark-danger a { color: #fff; }
 .modern-navbar-links > li > a:focus {
   background: #eef5f4 !important;
   color: #1d5a53 !important;
+  border-radius: 50%;
 }
 
 .modern-upload-form {
@@ -373,7 +373,7 @@ table .bg-dark-danger a { color: #fff; }
   justify-content: center;
   min-width: 44px;
   height: 44px;
-  padding: 0 12px !important;
+  padding: 0 !important;
   color: #1d5a53 !important;
   background: transparent;
 }
@@ -385,6 +385,12 @@ table .bg-dark-danger a { color: #fff; }
 .modern-profile-item.open .modern-profile-trigger {
   background: #eef5f4 !important;
   color: #184942 !important;
+}
+
+.modern-icon-link:hover,
+.modern-icon-link:focus,
+.modern-profile-item.open {
+  border-radius: 50%;
 }
 
 .modern-icon-link .glyphicon,
@@ -400,9 +406,9 @@ table .bg-dark-danger a { color: #fff; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #fde7c8, #f8c98c);
   color: #1d5a53;
   font-size: 16px;
